@@ -54,10 +54,15 @@ Photo 01 is the primary source because its distortion was the smaller of the two
 
 | Check | Model | Independent value |
 |---|---|---|
-| Tube centre (x, y) | (38.1, −9.45) | photo 01: (38.23, −9.27) · photo 10: (37.6, −9.45) · reading 4 with a 7.0 bore: (38.45, −9.61) |
+| Tube centre (x, y) | (38.1, −9.45) | photo 01: (38.23, −9.27) · photo 10: (37.6, −9.45) · reading 4 with a 7.0 bore: (38.45, −9.61) · v1 fit template: matches |
 | Slot inner edges | 34.3 | reading 2: 34.27 |
-| Slot ↔ bore, edge to edge | 13.76 | reading 4: 14.15 (bore size is a guess) |
+| Slot ↔ bore, edge to edge | 13.2 (7.9 bore) | reading 4: 14.15 · reading 10: 12.84 (see `measurements.md`) |
 | Total thickness at the square | 5.91 | reading 7: 5.91 (used as an input) |
+
+The pin is not taken from the photos any more. In v1 the photo put it 8.88 mm from the tube centre, while the
+caliper (reading 9) gives 7.93. The tube and the pin tops sit at different heights above the tilted web, so
+perspective moves them by different amounts. Only the direction from the tube to the pin
+(`tube_peg_angle`) still comes from photo 01.
 
 ## Limitations
 

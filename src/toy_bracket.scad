@@ -1,4 +1,4 @@
-// Toy bracket replacement - parametric OpenSCAD model (v1, first guess, NOT yet test-fitted)
+// Toy bracket replacement - parametric OpenSCAD model (v2: tube/pin measured, v1 fit template checked)
 //
 // Every number below comes from a caliper reading, a photo measurement or an explicit guess.
 // The source and confidence of each value is listed in docs/measurements.md and docs/assumptions.md.
@@ -22,6 +22,8 @@ part = "bracket"; // [bracket, fit_template]
 face_a_details = true;
 // Curve resolution
 $fn = 96;
+// Fit template only: how much bigger than the tube / pin its holes are
+template_clearance = 0.4;
 
 /* [Plan view: holes and anchors] */
 // Centre distance between the two oval slots (caliper: inner edges 34.27 + slot length)
@@ -45,13 +47,18 @@ lug_protrusion = 2.0;
 // Tube (pivot boss) centre, one per arm, mirrored in x
 tube_x = 38.1;
 tube_y = -9.45;
-// Tube outer / inner diameter  (GUESS - measure the bore and the axle that goes in it)
-tube_od = 10.0;
-tube_id = 7.0;
-// Solid pin next to each tube
-peg_x = 29.4;
-peg_y = -11.25;
-peg_d = 4.7;
+// Tube outer diameter (caliper: 9.83)
+tube_od = 9.83;
+// Tube bore. Caliper: 7.67 with the inside jaws, 9.83 - 2 x 0.96 wall = 7.91.
+// 7.9 because FDM prints holes 0.1-0.3 mm small and the bore has to slide over a post of the toy.
+tube_id = 7.9;
+// Solid pin next to each tube: diameter (caliper: 4.92)
+peg_d = 4.92;
+// Pin position relative to the tube. Span = far side of the tube to far side of the pin (caliper: 15.30),
+// so the centre distance is span - tube_od/2 - peg_d/2. Angle = direction from the tube centre to the
+// pin centre, degrees from +x, for the +x arm (photo 01).
+tube_peg_span = 15.30;
+tube_peg_angle = 191.7;
 // Extra scale for the traced arm outline only (x, y). 1 = as traced.
 arm_outline_scale = [1, 1];
 // Fillet in the concave corners of the outline / rounding of convex corners
@@ -75,7 +82,8 @@ face_a_rib_h = 0.6;
 face_a_rib_w = 0.9;
 // Width of the raised rings around the oval slots (both faces)
 slot_rim_w = 1.2;
-// Tube length sticking out of face A / face B  (GUESS from photos)
+// Tube length sticking out of face A / face B  (STILL A GUESS, from the broken fragment in photo 11.
+// Deliberately on the long side: a printed tube is easy to cut shorter, impossible to make longer.)
 tube_len_a = 6.0;
 tube_len_b = 12.0;
 // Pin length sticking out of face A / face B  (GUESS from photos)
@@ -87,9 +95,13 @@ eps = 0.01;
 sq_x0 = -square_x / 2;
 sq_y0 = square_y_centre - square_y / 2;   // hook-side edge of the square
 sq_y1 = square_y_centre + square_y / 2;   // straight-side edge of the square
+peg_c2c = tube_peg_span - tube_od / 2 - peg_d / 2;   // tube centre -> pin centre
+peg_x = tube_x + peg_c2c * cos(tube_peg_angle);
+peg_y = tube_y + peg_c2c * sin(tube_peg_angle);
 
 assert(slot_len_y >= slot_len_x, "slots are modelled as stadiums elongated in y");
 assert(tube_id < tube_od - 1.0, "tube wall thinner than 0.5 mm");
+assert(peg_c2c > (tube_od + peg_d) / 2, "pin overlaps the tube");
 assert(abs(tube_x) - tube_od / 2 > slot_c2c / 2 + slot_len_x / 2, "tube overlaps the slot");
 assert(peg_len_a <= tube_len_a, "pin longer than tube on face A changes the print base");
 
@@ -186,19 +198,20 @@ module bracket() {
 
 // Thin flat copy of the outline with all holes, to lay on top of the original part and check the
 // outline + hole positions before printing the real thing (prints in a few minutes).
-// The tube and pin holes are 0.4 mm oversize so the original's tubes / pins poke through.
+// The tube and pin holes are template_clearance oversize so the original's tubes / pins poke through.
 module fit_template(t = 1.0) {
     linear_extrude(t) difference() {
         outline_2d();
         slot_2d();
         for (s = [-1, 1]) {
-            translate([s * tube_x, tube_y]) circle(d = tube_od + 0.4);
-            translate([s * peg_x, peg_y]) circle(d = peg_d + 0.4);
+            translate([s * tube_x, tube_y]) circle(d = tube_od + template_clearance);
+            translate([s * peg_x, peg_y]) circle(d = peg_d + template_clearance);
         }
     }
 }
 
 echo(str("tube centre distance = ", 2 * tube_x, " mm, slot centre distance = ", slot_c2c, " mm"));
+echo(str("pin centre = [", peg_x, ", ", peg_y, "], ", peg_c2c, " mm from the tube centre"));
 echo(str("total thickness at square = ", (face_a_details ? face_a_rim_h : 0) + web_t + face_b_frame_h,
          " mm (caliper 5.91), tube length = ", tube_len_a + web_t + tube_len_b, " mm"));
 

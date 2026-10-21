@@ -43,7 +43,7 @@ openscad --render --imgsize=1200,800 --colorscheme=Tomorrow --camera=0,0,9,52,0,
 .venv/bin/python tools/trace_outline.py   # rewrites src/arm_outline.scad + docs/images/outline-derivation.*
 ```
 
-A good render prints two `ECHO` lines (tube centre distance, total thickness) and, for the bracket,
+A good render prints three `ECHO` lines (tube centre distance, pin centre, total thickness) and, for the bracket,
 `Simple: yes` and `Volumes: 2`. Treat any `WARNING` or `ERROR`, `Simple: no`, or a failed `assert` as a bug.
 Newer OpenSCAD development snapshots have a much faster Manifold backend (see `openscad --help`);
 2021.01 is fine, just slower (~20 s per STL).
@@ -83,7 +83,8 @@ tools/trace_outline.py    regenerate src/arm_outline.scad from docs/reference-ph
 | Rim + thin X on face A | `face_a_rim_h`, `face_a_rim_w`, `face_a_rib_h`, `face_a_rib_w`, `face_a_details` |
 | Oval slots | `slot_c2c`, `slot_len_x`, `slot_len_y`, rims: `slot_rim_w` |
 | Tubes (pivot bosses) | `tube_x`, `tube_y`, `tube_od`, `tube_id`, `tube_len_a`, `tube_len_b` |
-| Pins next to the tubes | `peg_x`, `peg_y`, `peg_d`, `peg_len_a`, `peg_len_b` |
+| Pins next to the tubes | `peg_d`, `peg_len_a`, `peg_len_b`; position: `tube_peg_span` (caliper, far side of tube to far side of pin) and `tube_peg_angle`. `peg_x` / `peg_y` are computed from these. |
+| Fit template holes | `template_clearance` |
 | Corner tabs on the hook side of the square | `lug_x`, `lug_w`, `lug_protrusion` |
 | Hooked arm outline | `src/arm_outline.scad` (generated), `arm_outline_scale`, `outline_inner_fillet`, `outline_outer_round` |
 
