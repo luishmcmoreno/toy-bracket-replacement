@@ -1,0 +1,15 @@
+{
+  "photo": "docs/reference-photos/01-top-view-caliper-width-43.27mm.jpg",
+  "raw_slot_c2c_mm": 40.97,
+  "scale_applied": 0.9763,
+  "hook_compression_factor": 0.9281,
+  "square_straight_edge_v": 18.19,
+  "square_hook_edge_v": -15.49,
+  "tube_bore_centre_from_photo": [
+    38.23,
+    -9.27
+  ],
+  "hook_tip_v_before": -25.83,
+  "hook_tip_v_after": -25.08,
+  "arm_points": 64
+}
